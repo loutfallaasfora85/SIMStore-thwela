@@ -24,6 +24,18 @@ export default function Footer() {
               </div>
               <span className="text-white font-bold text-sm sm:text-base">7055187582</span>
             </a>
+            <a
+              href="https://eauthenticate.saudibusiness.gov.sa/inquiry"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gray-800 hover:bg-gray-700 transition-colors rounded-xl p-3 border border-gray-700 inline-block mt-2"
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <span className="material-symbols-outlined text-amber-400 text-base">business_center</span>
+                <span className="text-xs text-gray-400">مركز الأعمال</span>
+              </div>
+              <span className="text-white font-bold text-sm sm:text-base">0000325572</span>
+            </a>
           </div>
 
           {/* Quick Links */}
@@ -70,7 +82,7 @@ export default function Footer() {
           <div className="col-span-2 sm:col-span-1">
             <h4 className="text-white font-bold text-sm sm:text-base mb-3 md:mb-4">تواصل معنا</h4>
             <a
-              href="https://wa.me/966591031747"
+              href="https://wa.me/966599535798"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 bg-green-600 hover:bg-green-500 text-white rounded-xl px-4 py-3 transition-colors mb-3"
@@ -80,7 +92,7 @@ export default function Footer() {
               </svg>
               <div>
                 <span className="text-[10px] opacity-75 block">واتساب - نرد بسرعة</span>
-                <span className="font-bold text-sm" dir="ltr">0591031747</span>
+                <span className="font-bold text-sm" dir="ltr">0599535798</span>
               </div>
             </a>
             <p className="text-gray-500 text-xs leading-relaxed">
