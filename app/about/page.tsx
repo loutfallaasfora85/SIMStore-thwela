@@ -40,7 +40,7 @@ export default function AboutPage() {
               </div>
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-secondary">verified</span>
-                <span className="text-on-surface-variant">السجل التجاري: 7054255687</span>
+                <span className="text-on-surface-variant">السجل التجاري: 7055187582</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-secondary">location_on</span>
@@ -48,7 +48,7 @@ export default function AboutPage() {
               </div>
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-secondary">phone</span>
-                <span className="text-on-surface-variant" dir="ltr">0591031747</span>
+                <span className="text-on-surface-variant" dir="ltr">0599535798</span>
               </div>
             </div>
           </div>
