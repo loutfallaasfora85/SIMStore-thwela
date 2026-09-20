@@ -35,7 +35,7 @@ export default function WhyUs() {
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 sm:mb-10 md:mb-14">
           <h2 className="text-xl sm:text-2xl md:text-[32px] font-bold text-gray-900 mb-2 sm:mb-3">
-          لماذا لمسة؟
+          لماذا برج المبدع؟
           </h2>
           <p className="text-gray-500 text-sm sm:text-base max-w-lg mx-auto">
             نحن نفهم أن بيتك يستحق الأفضل — لذلك نقدم لك جودة عالية بسعر عادل

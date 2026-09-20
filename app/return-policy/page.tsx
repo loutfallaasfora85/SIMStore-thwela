@@ -3,7 +3,7 @@ import Footer from "../components/Footer";
 import WhatsAppButton from "../components/WhatsAppButton";
 
 export const metadata = {
-  title: "سياسة الاسترجاع | لمسة للأجهزة المنزلية",
+  title: "سياسة الاسترجاع | برج المبدع للأجهزة المنزلية",
 };
 
 export default function ReturnPolicyPage() {
@@ -22,7 +22,7 @@ export default function ReturnPolicyPage() {
             سياسة الاسترجاع
           </h1>
           <p className="text-sm sm:text-base text-on-surface-variant mt-3 max-w-md mx-auto leading-relaxed">
-            نحن في لمسة للأجهزة المنزلية نسعى دائمًا لضمان رضا عملائنا. إذا لم تكن راضيًا عن عملية الشراء، يمكنك استبدال أو استرجاع المنتجات وفقًا للشروط التالية:
+            نحن في برج المبدع للأجهزة المنزلية نسعى دائمًا لضمان رضا عملائنا. إذا لم تكن راضيًا عن عملية الشراء، يمكنك استبدال أو استرجاع المنتجات وفقًا للشروط التالية:
           </p>
         </div>
 

@@ -30,7 +30,7 @@ export default function Header() {
       <nav className="flex justify-between items-center w-full px-4 sm:px-6 lg:px-8 max-w-[1280px] mx-auto h-16">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <Image src="/logo.webp" alt="لمسة للأجهزة المنزلية" width={44} height={44} className="rounded-lg" />
+          <Image src="/logo.webp" alt="برج المبدع للأجهزة المنزلية" width={44} height={44} className="rounded-lg" />
         </Link>
 
         {/* Nav Links - Desktop */}

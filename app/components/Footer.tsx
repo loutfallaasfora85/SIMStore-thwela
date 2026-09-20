@@ -8,17 +8,22 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1">
-            <h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-2 md:mb-3">لمسة للأجهزة المنزلية</h3>
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-2 md:mb-3">برج المبدع للأجهزة المنزلية</h3>
             <p className="text-gray-400 leading-relaxed text-xs sm:text-sm mb-4">
               وجهتك الأولى للأجهزة المنزلية في المملكة العربية السعودية — جودة تثق بها بسعر يناسبك.
             </p>
-            <div className="bg-gray-800 rounded-xl p-3 border border-gray-700 inline-block">
+            <a
+              href="https://qr.saudibusiness.gov.sa/viewcr?nCrNumber=Q5EZfdtz9yY8ZHsLf1ZCGw=="
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gray-800 hover:bg-gray-700 transition-colors rounded-xl p-3 border border-gray-700 inline-block"
+            >
               <div className="flex items-center gap-2 mb-1">
                 <span className="material-symbols-outlined text-amber-400 text-base">verified</span>
                 <span className="text-xs text-gray-400">السجل التجاري</span>
               </div>
-              <span className="text-white font-bold text-sm sm:text-base">7054255687</span>
-            </div>
+              <span className="text-white font-bold text-sm sm:text-base">7055187582</span>
+            </a>
           </div>
 
           {/* Quick Links */}
@@ -86,7 +91,7 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="pt-5 sm:pt-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs sm:text-sm text-gray-500">
-          <span>© 2026 لمسة للأجهزة المنزلية. جميع الحقوق محفوظة</span>
+          <span>© 2026 برج المبدع للأجهزة المنزلية. جميع الحقوق محفوظة</span>
           <span className="text-gray-600">المملكة العربية السعودية 🇸🇦</span>
         </div>
       </div>
