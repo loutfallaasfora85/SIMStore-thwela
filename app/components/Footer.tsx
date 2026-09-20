@@ -12,11 +12,12 @@ export default function Footer() {
             <p className="text-gray-400 leading-relaxed text-xs sm:text-sm mb-4">
               وجهتك الأولى للأجهزة المنزلية في المملكة العربية السعودية — جودة تثق بها بسعر يناسبك.
             </p>
+            <div className="flex flex-col gap-3">
             <a
               href="https://qr.saudibusiness.gov.sa/viewcr?nCrNumber=Q5EZfdtz9yY8ZHsLf1ZCGw=="
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-gray-800 hover:bg-gray-700 transition-colors rounded-xl p-3 border border-gray-700 inline-block"
+              className="bg-gray-800 hover:bg-gray-700 transition-colors rounded-xl p-3 border border-gray-700 block"
             >
               <div className="flex items-center gap-2 mb-1">
                 <span className="material-symbols-outlined text-amber-400 text-base">verified</span>
@@ -28,7 +29,7 @@ export default function Footer() {
               href="https://eauthenticate.saudibusiness.gov.sa/inquiry"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-gray-800 hover:bg-gray-700 transition-colors rounded-xl p-3 border border-gray-700 inline-block mt-3"
+              className="bg-gray-800 hover:bg-gray-700 transition-colors rounded-xl p-3 border border-gray-700 block"
             >
               <div className="flex items-center gap-2 mb-1">
                 <span className="material-symbols-outlined text-amber-400 text-base">business_center</span>
@@ -36,6 +37,7 @@ export default function Footer() {
               </div>
               <span className="text-white font-bold text-sm sm:text-base">0000325572</span>
             </a>
+            </div>
           </div>
 
           {/* Quick Links */}
