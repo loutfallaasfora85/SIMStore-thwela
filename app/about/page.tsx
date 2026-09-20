@@ -56,7 +56,7 @@ export default function AboutPage() {
 
         {/* Values Section */}
         <section className="mb-10 md:mb-16">
-          <h2 className="text-xl sm:text-2xl font-bold text-on-surface text-center mb-6 md:mb-10">لماذا لمسة؟</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-on-surface text-center mb-6 md:mb-10">لماذا برج المبدع؟</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               { icon: "verified", title: "منتجات أصلية", desc: "نضمن أصالة جميع منتجاتنا بكفالة رسمية" },
