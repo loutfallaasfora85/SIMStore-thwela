@@ -3,8 +3,8 @@ import Footer from "../components/Footer";
 import WhatsAppButton from "../components/WhatsAppButton";
 
 export const metadata = {
-  title: "من نحن | لمسة للأجهزة المنزلية",
-  description: "تعرف على لمسة للأجهزة المنزلية - وجهتكم الأولى لأحدث الأجهزة الإلكترونية في المملكة العربية السعودية",
+  title: "من نحن | برج المبدع للأجهزة المنزلية",
+  description: "تعرف على برج المبدع للأجهزة المنزلية - وجهتكم الأولى لأحدث الأجهزة الإلكترونية في المملكة العربية السعودية",
 };
 
 export default function AboutPage() {
@@ -16,14 +16,14 @@ export default function AboutPage() {
         <section className="text-center mb-10 md:mb-16">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-secondary mb-4">من نحن</h1>
           <p className="text-on-surface-variant text-base sm:text-lg max-w-2xl mx-auto">
-            لمسة - شريككم الموثوق في عالم التقنية
+            برج المبدع - شريككم الموثوق في عالم التقنية
           </p>
         </section>
 
         {/* About Section */}
         <section className="grid md:grid-cols-2 gap-8 md:gap-12 mb-10 md:mb-16">
           <div>
-            <h2 className="text-2xl font-bold text-on-surface mb-4">لمسة للأجهزة المنزلية</h2>
+            <h2 className="text-2xl font-bold text-on-surface mb-4">برج المبدع للأجهزة المنزلية</h2>
             <p className="text-on-surface-variant leading-relaxed mb-4">
               نحن مؤسسة سعودية متخصصة في توفير أحدث الأجهزة المنزلية بأعلى جودة وأفضل الأسعار. نسعى لأن نكون الوجهة الأولى لعملائنا في المملكة العربية السعودية.
             </p>
@@ -36,7 +36,7 @@ export default function AboutPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-secondary">store</span>
-                <span className="text-on-surface-variant">لمسة للأجهزة المنزلية</span>
+                <span className="text-on-surface-variant">برج المبدع للأجهزة المنزلية</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-secondary">verified</span>
