@@ -28,7 +28,7 @@ export default function Footer() {
               href="https://eauthenticate.saudibusiness.gov.sa/inquiry"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-gray-800 hover:bg-gray-700 transition-colors rounded-xl p-3 border border-gray-700 inline-block mt-2"
+              className="bg-gray-800 hover:bg-gray-700 transition-colors rounded-xl p-3 border border-gray-700 inline-block mt-3"
             >
               <div className="flex items-center gap-2 mb-1">
                 <span className="material-symbols-outlined text-amber-400 text-base">business_center</span>
