@@ -148,11 +148,11 @@ export default function ReturnPolicyPage() {
             <ul className="space-y-3 pr-2">
               <li className="flex items-center gap-2.5 text-[13px] sm:text-[15px] text-on-surface-variant">
                 <span className="material-symbols-outlined text-[18px] shrink-0 text-secondary">phone</span>
-                <a href="tel:0591031747" className="text-blue-600 underline font-medium" dir="ltr">0591031747</a>
+                <a href="tel:0599535798" className="text-blue-600 underline font-medium" dir="ltr">0599535798</a>
               </li>
               <li className="flex items-center gap-2.5 text-[13px] sm:text-[15px] text-on-surface-variant">
                 <span className="material-symbols-outlined text-[18px] shrink-0 text-green-600">chat</span>
-                <a href="https://wa.me/966591031747" target="_blank" rel="noopener noreferrer" className="text-green-600 underline font-medium" dir="ltr">0591031747</a>
+                <a href="https://wa.me/966599535798" target="_blank" rel="noopener noreferrer" className="text-green-600 underline font-medium" dir="ltr">0599535798</a>
               </li>
 
             </ul>
