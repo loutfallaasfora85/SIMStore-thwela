@@ -71,7 +71,7 @@ function CheckoutContent() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "حدث خطأ أثناء حفظ الطلب");
+      if (!res.ok) throw new Error(data.message || data.error || JSON.stringify(data) || "حدث خطأ أثناء حفظ الطلب");
 
       const createdOrderId = data.data?._id || data.data?.id;
 
