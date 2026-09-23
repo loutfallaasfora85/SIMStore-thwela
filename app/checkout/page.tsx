@@ -1,19 +1,29 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "../context/CartContext";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const { items, totalPrice, clearCart } = useCart();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ customerName: "", phone: "", address: "", notes: "" });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [paymentMethod, setPaymentMethod] = useState<"noon_payments" | "cash_on_delivery">("noon_payments");
+
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam) {
+      setError(decodeURIComponent(errorParam));
+    }
+  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -39,10 +49,14 @@ export default function CheckoutPage() {
     e.preventDefault();
     setError("");
     if (!validate()) return;
-    if (items.length === 0) { setError("السلة فارغة"); return; }
+    if (items.length === 0) {
+      setError("السلة فارغة");
+      return;
+    }
 
     setLoading(true);
     try {
+      // 1. Create order on the backend
       const res = await fetch(`${API_URL}/api/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -51,15 +65,50 @@ export default function CheckoutPage() {
           phone: form.phone,
           address: form.address,
           notes: form.notes,
-          paymentMethod: "cash_on_delivery",
+          paymentMethod,
           items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "حدث خطأ");
 
-      clearCart();
-      router.push(`/order-success?id=${data.data._id}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "حدث خطأ أثناء حفظ الطلب");
+
+      const createdOrderId = data.data?._id || data.data?.id;
+
+      if (paymentMethod === "noon_payments") {
+        // 2. Initiate payment session via our secure noon payments API Route
+        const noonRes = await fetch("/api/noon/initiate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: createdOrderId,
+            amount: totalPrice,
+            currency: "SAR",
+            name: `طلب متجر #${createdOrderId}`,
+            customerName: form.customerName,
+            customerPhone: form.phone,
+          }),
+        });
+
+        const noonData = await noonRes.json();
+        if (!noonRes.ok || !noonData.success) {
+          throw new Error(noonData.message || "تعذر بدء عملية الدفع عبر noon payments");
+        }
+
+        clearCart();
+
+        // 3. Redirect to noon payments Hosted Checkout
+        if (noonData.data?.postUrl) {
+          window.location.href = noonData.data.postUrl;
+          return;
+        } else {
+          throw new Error("لم يتم استلام رابط الدفع من noon payments");
+        }
+      } else {
+        // Cash on delivery flow
+        clearCart();
+        router.push(`/order-success?id=${createdOrderId}`);
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "حدث خطأ غير متوقع");
     } finally {
@@ -78,7 +127,10 @@ export default function CheckoutPage() {
             </div>
             <h1 className="text-2xl font-bold text-gray-800 mb-2">السلة فارغة</h1>
             <p className="text-gray-400 text-sm mb-8">أضف منتجات للسلة أولاً لإتمام الطلب</p>
-            <a href="/products" className="inline-flex items-center gap-2 bg-secondary text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-secondary/85 transition-all shadow-lg shadow-secondary/25">
+            <a
+              href="/products"
+              className="inline-flex items-center gap-2 bg-secondary text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-secondary/85 transition-all shadow-lg shadow-secondary/25"
+            >
               <span className="material-symbols-outlined text-[20px]">storefront</span>
               تصفح المنتجات
             </a>
@@ -94,12 +146,15 @@ export default function CheckoutPage() {
       <Header />
       <main dir="rtl" className="bg-gray-50/60 min-h-screen">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-            <a href="/" className="hover:text-secondary transition-colors">الرئيسية</a>
+            <a href="/" className="hover:text-secondary transition-colors">
+              الرئيسية
+            </a>
             <span className="material-symbols-outlined text-[14px]">chevron_left</span>
-            <a href="/cart" className="hover:text-secondary transition-colors">السلة</a>
+            <a href="/cart" className="hover:text-secondary transition-colors">
+              السلة
+            </a>
             <span className="material-symbols-outlined text-[14px]">chevron_left</span>
             <span className="text-gray-700 font-medium">إتمام الطلب</span>
           </div>
@@ -129,10 +184,8 @@ export default function CheckoutPage() {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-6">
-
             {/* ── Form ── */}
             <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-5">
-
               {/* Error banner */}
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3.5 rounded-2xl flex items-center gap-3">
@@ -155,12 +208,7 @@ export default function CheckoutPage() {
 
                 <div className="p-5 sm:p-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                    <InputField
-                      label="الاسم الكامل"
-                      required
-                      error={fieldErrors.customerName}
-                      icon="person"
-                    >
+                    <InputField label="الاسم الكامل" required error={fieldErrors.customerName} icon="person">
                       <input
                         name="customerName"
                         value={form.customerName}
@@ -171,12 +219,7 @@ export default function CheckoutPage() {
                       />
                     </InputField>
 
-                    <InputField
-                      label="رقم الجوال"
-                      required
-                      error={fieldErrors.phone}
-                      icon="phone"
-                    >
+                    <InputField label="رقم الجوال" required error={fieldErrors.phone} icon="phone">
                       <input
                         name="phone"
                         value={form.phone}
@@ -191,12 +234,7 @@ export default function CheckoutPage() {
                     </InputField>
 
                     <div className="sm:col-span-2">
-                      <InputField
-                        label="العنوان التفصيلي"
-                        required
-                        error={fieldErrors.address}
-                        icon="location_on"
-                      >
+                      <InputField label="العنوان التفصيلي" required error={fieldErrors.address} icon="location_on">
                         <input
                           name="address"
                           value={form.address}
@@ -224,7 +262,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Payment Card */}
+              {/* Payment Method Selection Card */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 overflow-hidden">
                 <div className="flex items-center gap-3 px-5 sm:px-6 py-4 border-b border-gray-100">
                   <div className="w-9 h-9 bg-secondary/10 rounded-xl flex items-center justify-center">
@@ -236,17 +274,87 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-center gap-3 rounded-2xl p-4 border-2 border-secondary bg-secondary/5">
-                    <span className="text-2xl">💵</span>
-                    <div>
-                      <p className="font-bold text-sm text-secondary">الدفع عند الاستلام</p>
-                      <p className="text-xs text-gray-400 mt-0.5">ادفع نقداً عند استلام طلبك</p>
+                <div className="p-5 sm:p-6 space-y-3">
+                  {/* Noon Payments Option */}
+                  <label
+                    onClick={() => setPaymentMethod("noon_payments")}
+                    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl p-4 border-2 cursor-pointer transition-all ${
+                      paymentMethod === "noon_payments"
+                        ? "border-secondary bg-secondary/5 shadow-sm"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-black text-xs">
+                        noon
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-sm text-gray-900">الدفع الإلكتروني (noon payments)</p>
+                          <span className="text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-bold">
+                            آمن وموصى به
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          مدى، فيزا، ماستركارد، Apple Pay
+                        </p>
+                      </div>
                     </div>
-                    <div className="mr-auto w-5 h-5 rounded-full border-2 border-secondary flex items-center justify-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-secondary" />
+
+                    <div className="flex items-center gap-3 mr-auto sm:mr-0">
+                      {/* Payment Badges */}
+                      <div className="flex items-center gap-1.5 opacity-80">
+                        <span className="text-[11px] font-bold px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 border border-gray-200">
+                          مدى
+                        </span>
+                        <span className="text-[11px] font-bold px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 border border-gray-200">
+                          Visa
+                        </span>
+                        <span className="text-[11px] font-bold px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 border border-gray-200">
+                          Mastercard
+                        </span>
+                        <span className="text-[11px] font-bold px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 border border-gray-200">
+                          Pay
+                        </span>
+                      </div>
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          paymentMethod === "noon_payments" ? "border-secondary" : "border-gray-300"
+                        }`}
+                      >
+                        {paymentMethod === "noon_payments" && (
+                          <div className="w-2.5 h-2.5 rounded-full bg-secondary" />
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </label>
+
+                  {/* Cash on Delivery Option */}
+                  <label
+                    onClick={() => setPaymentMethod("cash_on_delivery")}
+                    className={`flex items-center justify-between rounded-2xl p-4 border-2 cursor-pointer transition-all ${
+                      paymentMethod === "cash_on_delivery"
+                        ? "border-secondary bg-secondary/5 shadow-sm"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">💵</span>
+                      <div>
+                        <p className="font-bold text-sm text-gray-900">الدفع عند الاستلام</p>
+                        <p className="text-xs text-gray-400 mt-0.5">ادفع نقداً عند استلام طلبك</p>
+                      </div>
+                    </div>
+                    <div
+                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        paymentMethod === "cash_on_delivery" ? "border-secondary" : "border-gray-300"
+                      }`}
+                    >
+                      {paymentMethod === "cash_on_delivery" && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-secondary" />
+                      )}
+                    </div>
+                  </label>
                 </div>
               </div>
 
@@ -254,24 +362,28 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-secondary text-white py-4 sm:py-5 rounded-2xl font-bold text-base sm:text-lg hover:bg-secondary/85 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2.5 shadow-xl shadow-secondary/25"
+                className="w-full bg-secondary text-white py-4 sm:py-5 rounded-2xl font-bold text-base sm:text-lg hover:bg-secondary/85 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2.5 shadow-xl shadow-secondary/25 cursor-pointer"
               >
                 {loading ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                    جاري معالجة الطلب...
+                    جاري إعداد الدفع...
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-outlined">check_circle</span>
-                    تأكيد الطلب
+                    <span className="material-symbols-outlined">
+                      {paymentMethod === "noon_payments" ? "lock" : "check_circle"}
+                    </span>
+                    {paymentMethod === "noon_payments"
+                      ? `الدفع الآن (${totalPrice.toLocaleString()} ر.س)`
+                      : "تأكيد الطلب"}
                   </>
                 )}
               </button>
 
               {/* Trust row */}
               <div className="flex items-center justify-center gap-5 text-xs text-gray-400 pb-2">
-                {["lock|دفع آمن", "verified|منتجات أصلية", "local_shipping|توصيل مجاني"].map((s) => {
+                {["lock|دفع آمن ومشفّر", "verified|حماية المشتري", "local_shipping|توصيل سريع"].map((s) => {
                   const [icon, label] = s.split("|");
                   return (
                     <div key={icon} className="flex items-center gap-1">
@@ -288,9 +400,7 @@ export default function CheckoutPage() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 overflow-hidden sticky top-24">
                 {/* Header */}
                 <div className="px-5 sm:px-6 py-4 border-b border-gray-100 bg-gradient-to-l from-secondary/5 to-transparent">
-                  <h2 className="font-bold text-gray-900 text-base">
-                    ملخص طلبك
-                  </h2>
+                  <h2 className="font-bold text-gray-900 text-base">ملخص طلبك</h2>
                   <p className="text-xs text-gray-400 mt-0.5">{items.length} منتج في سلتك</p>
                 </div>
 
@@ -354,12 +464,19 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </main>
       <Footer />
     </>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">جاري التحميل...</div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }
 
@@ -373,9 +490,19 @@ function iCls(hasError: boolean) {
 }
 
 function InputField({
-  label, required, hint, error, icon, children,
+  label,
+  required,
+  hint,
+  error,
+  icon,
+  children,
 }: {
-  label: string; required?: boolean; hint?: string; error?: string; icon?: string; children: React.ReactNode;
+  label: string;
+  required?: boolean;
+  hint?: string;
+  error?: string;
+  icon?: string;
+  children: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -395,4 +522,3 @@ function InputField({
     </div>
   );
 }
-
