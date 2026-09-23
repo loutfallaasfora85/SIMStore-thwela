@@ -151,7 +151,7 @@ export class NoonPaymentsService {
       this.config.returnUrl ||
       "http://localhost:3000";
 
-    const returnUrl = `${appUrl}/api/noon/callback?orderId=${encodeURIComponent(params.orderId)}`;
+    const returnUrl = `${appUrl}/api/noon/callback?merchantOrderId=${encodeURIComponent(params.orderId)}&orderId={order.id}&status={order.status}`;
 
     // Sanitize reference to avoid special characters rejected by gateways
     const sanitizedReference = params.orderId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 50);

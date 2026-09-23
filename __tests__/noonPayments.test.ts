@@ -1,7 +1,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert";
 import crypto from "crypto";
-import { NoonPaymentsService } from "../app/lib/noon/noonPaymentsService.ts";
+import { NoonPaymentsService } from "../app/lib/noon/noonPaymentsService";
 
 describe("NoonPaymentsService Unit Tests", () => {
   const mockConfig = {

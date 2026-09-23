@@ -95,7 +95,8 @@ function CheckoutContent() {
           throw new Error(noonData.message || "تعذر بدء عملية الدفع عبر noon payments");
         }
 
-        clearCart();
+        // لا يتم مسح السلة هنا لحمايتها من الضياع في حال إلغاء العميل للدفع
+        // يتم تفريغ السلة فقط عند التأكد التام من نجاح الدفع في صفحة order-success
 
         // 3. Redirect to noon payments Hosted Checkout
         if (noonData.data?.postUrl) {
@@ -121,19 +122,36 @@ function CheckoutContent() {
       <>
         <Header />
         <main className="min-h-[70vh] flex items-center justify-center px-4 bg-gray-50/50">
-          <div className="text-center">
-            <div className="w-28 h-28 bg-white rounded-full shadow-lg flex items-center justify-center mx-auto mb-6">
-              <span className="material-symbols-outlined text-6xl text-gray-200">remove_shopping_cart</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">السلة فارغة</h1>
-            <p className="text-gray-400 text-sm mb-8">أضف منتجات للسلة أولاً لإتمام الطلب</p>
-            <a
-              href="/products"
-              className="inline-flex items-center gap-2 bg-secondary text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-secondary/85 transition-all shadow-lg shadow-secondary/25"
-            >
-              <span className="material-symbols-outlined text-[20px]">storefront</span>
-              تصفح المنتجات
-            </a>
+          <div className="text-center max-w-md mx-auto">
+            {error ? (
+              <div className="bg-red-50 border border-red-200 text-red-700 p-6 rounded-2xl mb-6 shadow-sm">
+                <span className="material-symbols-outlined text-4xl text-red-500 mb-2">error</span>
+                <h2 className="text-lg font-bold mb-1">تنبيه عملية الدفع</h2>
+                <p className="text-sm text-red-600 mb-4">{error}</p>
+                <a
+                  href="/products"
+                  className="inline-flex items-center gap-2 bg-secondary text-white px-6 py-2.5 rounded-xl font-bold hover:bg-secondary/90 transition-all text-sm"
+                >
+                  <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
+                  العودة للمتجر واختيار المنتجات
+                </a>
+              </div>
+            ) : (
+              <>
+                <div className="w-28 h-28 bg-white rounded-full shadow-lg flex items-center justify-center mx-auto mb-6">
+                  <span className="material-symbols-outlined text-6xl text-gray-200">remove_shopping_cart</span>
+                </div>
+                <h1 className="text-2xl font-bold text-gray-800 mb-2">السلة فارغة</h1>
+                <p className="text-gray-400 text-sm mb-8">أضف منتجات للسلة أولاً لإتمام الطلب</p>
+                <a
+                  href="/products"
+                  className="inline-flex items-center gap-2 bg-secondary text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-secondary/85 transition-all shadow-lg shadow-secondary/25"
+                >
+                  <span className="material-symbols-outlined text-[20px]">storefront</span>
+                  تصفح المنتجات
+                </a>
+              </>
+            )}
           </div>
         </main>
         <Footer />
@@ -278,54 +296,48 @@ function CheckoutContent() {
                   {/* Noon Payments Option */}
                   <label
                     onClick={() => setPaymentMethod("noon_payments")}
-                    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl p-4 border-2 cursor-pointer transition-all ${
+                    className={`flex items-start justify-between gap-3 rounded-2xl p-4 border-2 cursor-pointer transition-all ${
                       paymentMethod === "noon_payments"
                         ? "border-secondary bg-secondary/5 shadow-sm"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-black text-xs">
+                    {/* Icon + Text + Badges */}
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-black text-xs">
                         noon
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-sm text-gray-900">الدفع الإلكتروني (noon payments)</p>
-                          <span className="text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-bold">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+                          <p className="font-bold text-sm text-gray-900 leading-snug">الدفع الإلكتروني</p>
+                          <span className="text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-bold whitespace-nowrap">
                             آمن وموصى به
                           </span>
                         </div>
-                        <p className="text-xs text-gray-400 mt-0.5">
-                          مدى، فيزا، ماستركارد، Apple Pay
-                        </p>
+                        <p className="text-xs text-gray-400 mb-2">مدى، فيزا، ماستركارد، Apple Pay</p>
+                        {/* Payment Badges */}
+                        <div className="flex flex-wrap items-center gap-1 opacity-80">
+                          {["مدى", "Visa", "Mastercard", "Apple Pay"].map((badge) => (
+                            <span
+                              key={badge}
+                              className="text-[10px] font-bold px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 border border-gray-200 whitespace-nowrap"
+                            >
+                              {badge}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 mr-auto sm:mr-0">
-                      {/* Payment Badges */}
-                      <div className="flex items-center gap-1.5 opacity-80">
-                        <span className="text-[11px] font-bold px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 border border-gray-200">
-                          مدى
-                        </span>
-                        <span className="text-[11px] font-bold px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 border border-gray-200">
-                          Visa
-                        </span>
-                        <span className="text-[11px] font-bold px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 border border-gray-200">
-                          Mastercard
-                        </span>
-                        <span className="text-[11px] font-bold px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 border border-gray-200">
-                          Pay
-                        </span>
-                      </div>
-                      <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                          paymentMethod === "noon_payments" ? "border-secondary" : "border-gray-300"
-                        }`}
-                      >
-                        {paymentMethod === "noon_payments" && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-secondary" />
-                        )}
-                      </div>
+                    {/* Radio indicator */}
+                    <div
+                      className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        paymentMethod === "noon_payments" ? "border-secondary" : "border-gray-300"
+                      }`}
+                    >
+                      {paymentMethod === "noon_payments" && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-secondary" />
+                      )}
                     </div>
                   </label>
 

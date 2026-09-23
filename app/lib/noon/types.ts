@@ -105,6 +105,7 @@ export interface NoonGetOrderResult {
     status: NoonApiOrderStatus;
     creationTime?: string;
     amount?: number;
+    totalAmount?: number;
     currency?: string;
     name?: string;
     reference?: string;
