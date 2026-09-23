@@ -144,9 +144,14 @@ export class NoonPaymentsService {
       throw new Error("Invalid payment parameters: orderId and a positive amount are required.");
     }
 
-    const returnUrl =
+    // Read at request-time to always get the correct runtime value (not the build-time snapshot)
+    const appUrl =
       params.returnUrl ||
-      `${this.config.returnUrl}/api/noon/callback?orderId=${encodeURIComponent(params.orderId)}`;
+      process.env.NEXT_PUBLIC_APP_URL ||
+      this.config.returnUrl ||
+      "http://localhost:3000";
+
+    const returnUrl = `${appUrl}/api/noon/callback?orderId=${encodeURIComponent(params.orderId)}`;
 
     // Sanitize reference to avoid special characters rejected by gateways
     const sanitizedReference = params.orderId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 50);
